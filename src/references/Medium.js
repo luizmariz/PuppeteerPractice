@@ -1,6 +1,9 @@
+const Reference = require('./Reference');
+
 const ARTICLE_ITEM_CLASS = 'postArticle postArticle--short js-postArticle js-trackPostPresentation';
 
-class Medium {
+class Medium extends Reference {
+  //@Override
   async search(page, query) {
     await page.goto( `https://medium.com/search?q=${query}`);
   }

@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const Medium = require('./Medium');
+const Medium = require('./references/Medium');
 
 class App {
 	constructor() {
