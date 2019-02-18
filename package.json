@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/luizmariz/PuppeteerPractice#readme",
   "dependencies": {
+    "airtable": "^0.5.9",
+    "languagedetect": "^1.2.0",
     "puppeteer": "^1.12.2"
   }
 }
