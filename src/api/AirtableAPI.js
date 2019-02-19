@@ -11,7 +11,7 @@ class AirtableAPI {
       "TITULO": tit,
       "DESCRIÇÃO": desc,
       "URL": lin,
-      "framework": fram,
+      "framework": [fram],
     }, (err, record) => {
         if (err) { console.error(err); return; }
         console.log(record.getId());
@@ -19,9 +19,9 @@ class AirtableAPI {
   }
 
   async getFrameworkRecords() {
-    const recordsList = [];
+    return await new Promise( (resolve, reject) => {
+      const recordsList = [];
 
-    await new Promise( (resolve, reject) => {
       this.base('Frameworks').select({ 
         view: "Lista" 
         
@@ -37,11 +37,10 @@ class AirtableAPI {
         fetchNextPage();
   
       }, function done(err) {
-        if (err) { console.error(err); return; }
-        resolve("123")
+        if (err) { console.error(err);}
+        resolve(recordsList);
       });
     });
-
   }
     
 }

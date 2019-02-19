@@ -16,7 +16,7 @@ class Medium extends Reference {
   async initFuncs() {
     await this.page.waitForNavigation();
     await this.page.exposeFunction('checkLng', string => lngDetector.detect(string, 1));
-    await this.page.exposeFunction('register', (tit, desc, lin) => airtable.createArtigoRecord(tit, desc, lin, this.frameworkID));
+    await this.page.exposeFunction('register', (tit, desc, lin, framID) => airtable.createArtigoRecord(tit, desc, lin, framID));
   }
 
   async search() {
@@ -25,7 +25,7 @@ class Medium extends Reference {
   }
   
   async scrollAndScrap() {
-    await this.page.evaluate( async article => {
+    await this.page.evaluate( async ( article, frameworkID ) => {
       await new Promise((resolve, reject) => {
         const distance = 2000; 
         let index = 0;
@@ -39,11 +39,12 @@ class Medium extends Reference {
               subtitle: document.getElementsByClassName(article)[index].getElementsByClassName('postArticle-content')[0].firstElementChild.firstElementChild.lastElementChild.firstElementChild.getElementsByClassName('graf--trailing')[0] || { textContent: "" },
               claps: document.getElementsByClassName(article)[index].lastElementChild.firstElementChild.lastElementChild.lastElementChild.firstElementChild || { textContent: "" }
             })
-
-         
-            await window.register(item.title.textContent, item.subtitle.textContent, item.url, "recx4hc8sOWcSrAPT");
             
-
+            //if ( urlAlredySaved && item.claps.slice(-1) == "K" ) {
+              //await window.saveURL( item.url );
+              //await window.register(item.title.textContent, item.subtitle.textContent, item.url, frameworkID);
+            //}
+            
             window.scrollBy(0, distance);
             index++;
 
@@ -54,7 +55,7 @@ class Medium extends Reference {
           }
         }, 400);
       });
-    }, ARTICLE_ITEM_CLASS);
+    }, ARTICLE_ITEM_CLASS, this.frameworkID);
   }
 }
 
