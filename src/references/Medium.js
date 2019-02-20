@@ -27,7 +27,7 @@ class Medium extends Reference {
   async scrollAndScrap() {
     await this.page.evaluate( async ( article, frameworkID ) => {
       await new Promise((resolve, reject) => {
-        const distance = 2000; 
+        const distance = 1500; 
         let index = 0;
         
         const timer = setInterval( async () => {
@@ -39,12 +39,40 @@ class Medium extends Reference {
               subtitle: document.getElementsByClassName(article)[index].getElementsByClassName('postArticle-content')[0].firstElementChild.firstElementChild.lastElementChild.firstElementChild.getElementsByClassName('graf--trailing')[0] || { textContent: "" },
               claps: document.getElementsByClassName(article)[index].lastElementChild.firstElementChild.lastElementChild.lastElementChild.firstElementChild || { textContent: "" }
             })
+
             
-            //if ( urlAlredySaved && item.claps.slice(-1) == "K" ) {
-              //await window.saveURL( item.url );
-              //await window.register(item.title.textContent, item.subtitle.textContent, item.url, frameworkID);
-            //}
+            const res = await fetch('http://localhost:3000/exists', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                value: item.url,
+              }),
+            });
             
+            const urlIsOnBD = await res.json();
+            const language = await window.checkLng(item.title.textContent);
+           
+            if (language[0][0] === 'english' || language[0][0] === 'latin' || language[0][0] === 'portuguese' || language[0][0] === 'spanish' || language[0][0] == 'french') {
+              if ( item.title.textContent.slice(-1) !== '>' && urlIsOnBD.value === false && item.claps.textContent.slice(-1) === "K") {
+                await fetch('http://localhost:3000/create', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    value: item.url,
+                  }),
+                });
+
+                const subtitle = item.subtitle.textContent.slice(-1) == '>' ? item.title.textContent : item.subtitle.textContent;
+                await window.register(item.title.textContent, subtitle, item.url, frameworkID);
+              }
+            }
+
             window.scrollBy(0, distance);
             index++;
 
@@ -53,7 +81,7 @@ class Medium extends Reference {
               clearInterval(timer);
               resolve();
           }
-        }, 400);
+        }, 500);
       });
     }, ARTICLE_ITEM_CLASS, this.frameworkID);
   }

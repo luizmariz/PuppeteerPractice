@@ -25,7 +25,7 @@ const createTables = () => {
     `CREATE TABLE IF NOT EXISTS
       urls(
         id UUID PRIMARY KEY,
-        url VARCHAR(128) NOT NULL,
+        url VARCHAR(256) NOT NULL,
         created_date TIMESTAMP,
         modified_date TIMESTAMP
       )`;

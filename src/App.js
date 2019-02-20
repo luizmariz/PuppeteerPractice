@@ -8,6 +8,7 @@ class App {
 		const frameworks = await airtable.getFrameworkRecords();
 		const browser = await puppeteer.launch({headless: false});
 		const page = await browser.newPage();
+		await page.setBypassCSP(true);
 		
 		for (let i = 0; i < frameworks.length; i++){
 			console.log("pesquisando por " + frameworks[i].name + " no Medium");
