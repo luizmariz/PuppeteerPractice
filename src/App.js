@@ -1,19 +1,23 @@
 const puppeteer = require('puppeteer');
 const Medium = require('./references/Medium');
-const airtable = new(require('./api/AirtableAPI'))('');
+const dotenv = require('dotenv');
 
+dotenv.config();
+
+const airtable = new(require('./api/AirtableAPI'))(process.env.AIRTABLE_KEY);
 
 class App {
 	async execute() {
 		const frameworks = await airtable.getFrameworkRecords();
-		const browser = await puppeteer.launch({headless: false});
-		const page = await browser.newPage();
-		await page.setBypassCSP(true);
+		const browser = await puppeteer.launch({headless: true});
 		
-		for (let i = 0; i < frameworks.length; i++){
+		for (let i = 16; i < frameworks.length; i++){
+			let page = await browser.newPage();
+			await page.setBypassCSP(true);
 			console.log("pesquisando por " + frameworks[i].name + " no Medium");
 			this.medium = new Medium( page, frameworks[i].id, frameworks[i].name );
 			await this.medium.search();
+			page.close();
 		}
 		
   	await browser.close();

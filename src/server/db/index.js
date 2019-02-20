@@ -20,9 +20,6 @@ module.exports = {
       .then((res) => {
         resolve(res);
       })
-      .catch((err) => {
-        reject(err);
-      })
     })
   }
 }

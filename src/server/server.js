@@ -13,13 +13,21 @@ app.listen(3000, function () {
 });
 
 app.post('/create', async (req, res) => {
-  await urls_controller.create(req.body.value);
-  console.log("salvei")
+  try {
+    await urls_controller.create(req.body.value);
+  } catch (err) {
+    console.log("create error")
+  }
+  
   res.send("saved!");
 });
 
 app.post('/exists', async (req, res) => {
-  const boolean = await urls_controller.exist(req.body.value);
-  console.log(boolean);
-  res.send({ value: boolean });
+  
+  try {
+    const boolean = await urls_controller.exist(req.body.value);
+    res.send({ value: boolean });
+  } catch (err) {
+    console.log("exists error")
+  }
 });

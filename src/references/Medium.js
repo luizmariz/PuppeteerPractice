@@ -1,6 +1,10 @@
 const Reference = require('./Reference');
 const lngDetector = new(require('languagedetect'));
-const airtable = new(require('../api/AirtableAPI'))('');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const airtable = new(require('../api/AirtableAPI'))(process.env.AIRTABLE_KEY);
 
 const ARTICLE_ITEM_CLASS = 'postArticle postArticle--short js-postArticle js-trackPostPresentation';
 
@@ -27,7 +31,7 @@ class Medium extends Reference {
   async scrollAndScrap() {
     await this.page.evaluate( async ( article, frameworkID ) => {
       await new Promise((resolve, reject) => {
-        const distance = 1500; 
+        const distance = 2500; 
         let index = 0;
         
         const timer = setInterval( async () => {
@@ -54,9 +58,10 @@ class Medium extends Reference {
             
             const urlIsOnBD = await res.json();
             const language = await window.checkLng(item.title.textContent);
-           
-            if (language[0][0] === 'english' || language[0][0] === 'latin' || language[0][0] === 'portuguese' || language[0][0] === 'spanish' || language[0][0] == 'french') {
+          
+            if ( language[0] && (language[0][0] === 'english' || language[0][0] === 'latin' || language[0][0] === 'portuguese' || language[0][0] === 'spanish' || language[0][0] == 'french')) {
               if ( item.title.textContent.slice(-1) !== '>' && urlIsOnBD.value === false && item.claps.textContent.slice(-1) === "K") {
+                
                 await fetch('http://localhost:3000/create', {
                   method: 'POST',
                   headers: {
@@ -66,10 +71,11 @@ class Medium extends Reference {
                   body: JSON.stringify({
                     value: item.url,
                   }),
-                });
-
+                }).catch(err => console.log(err));
+               
                 const subtitle = item.subtitle.textContent.slice(-1) == '>' ? item.title.textContent : item.subtitle.textContent;
                 await window.register(item.title.textContent, subtitle, item.url, frameworkID);
+                
               }
             }
 
@@ -77,9 +83,10 @@ class Medium extends Reference {
             index++;
 
           } catch (error){
-            console.log(error)
-              clearInterval(timer);
-              resolve();
+            console.log(error) 
+            clearInterval(timer);
+            resolve();
+            
           }
         }, 500);
       });
