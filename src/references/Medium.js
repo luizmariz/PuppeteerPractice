@@ -45,9 +45,10 @@ class Medium extends Reference {
             body: JSON.stringify({
               value: url,
             }),
-          }).then( data => data.json());
+          })
 
-          return res.value;
+          const boolean = await res.json()
+          return boolean.value;
         }
         
         //Use a boolean expression to filter data
@@ -65,6 +66,7 @@ class Medium extends Reference {
                  
             const subtitle = item.subtitle.textContent.slice(-1) == '>' ? item.title.textContent : item.subtitle.textContent;
             await window.register(item.title.textContent, subtitle, item.url, thingID, thing);
+            console.log('salvei')
           }
         
         }
@@ -113,6 +115,10 @@ class Medium extends Reference {
                 
                 await scheduleItem(items[i], filt);
 
+                if (filt) {
+                  cont++;
+                }
+                
                 if (cont === 20) {
                   break;
                 }
