@@ -6,16 +6,30 @@ class AirtableAPI {
     this.base = new Airtable({apiKey: this.API_KEY}).base('appzOuGudjNGlZ8Jm');
   }
 
-  createArtigoRecord( tit, desc, lin, fram) {
-    this.base('Artigos').create({
-      "TITULO": tit,
-      "DESCRIÇÃO": desc,
-      "URL": lin,
-      "framework": [fram],
-    }, (err, record) => {
-        if (err) { console.error(err); return; }
-        console.log(record.getId());
-    });
+  createArtigoRecord( tit, desc, lin, thing, thingName) {
+    if (thingName === "framework") {
+      this.base('Artigos').create({
+        "TITULO": tit,
+        "DESCRIÇÃO": desc,
+        "URL": lin,
+        "framework": [thing],
+      }, (err, record) => {
+          if (err) { console.error(err); return; }
+          console.log(record.getId());
+      });
+    }
+
+    if (thingName === "lib") {
+      this.base('Artigos').create({
+        "TITULO": tit,
+        "DESCRIÇÃO": desc,
+        "URL": lin,
+        "lib": [thing],
+      }, (err, record) => {
+          if (err) { console.error(err); return; }
+          console.log(record.getId());
+      });
+    }
   }
 
   async getFrameworkRecords() {
@@ -23,6 +37,31 @@ class AirtableAPI {
       const recordsList = [];
 
       this.base('Frameworks').select({ 
+        view: "Lista" 
+        
+      }).eachPage(function page(records, fetchNextPage) { 
+        
+        records.forEach(function(record) {
+          recordsList.push({
+            "name": record.get('NOME'),
+            "id": record.id
+          });
+        });
+
+        fetchNextPage();
+  
+      }, function done(err) {
+        if (err) { console.error(err);}
+        resolve(recordsList);
+      });
+    });
+  }
+
+  async getLibsRecords() {
+    return await new Promise( (resolve, reject) => {
+      const recordsList = [];
+
+      this.base('Libs').select({ 
         view: "Lista" 
         
       }).eachPage(function page(records, fetchNextPage) { 

@@ -19,7 +19,7 @@ module.exports = {
       pool.query(text, params)
       .then((res) => {
         resolve(res);
-      })
+      }).catch();
     })
   }
 }

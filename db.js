@@ -24,7 +24,7 @@ const createTables = () => {
   const queryText =
     `CREATE TABLE IF NOT EXISTS
       urls(
-        url VARCHAR(256) PRIMARY KEY,
+        url VARCHAR(512) PRIMARY KEY,
         created_date TIMESTAMP,
         modified_date TIMESTAMP
       )`;
