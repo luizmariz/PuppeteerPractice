@@ -5,33 +5,34 @@ const airtable = new(require('../api/AirtableAPI'))(process.env.AIRTABLE_KEY);
 const ARTICLE_ITEM_CLASS = 'postArticle postArticle--short js-postArticle js-trackPostPresentation';
 
 class Medium extends Reference {
-  constructor(page, thingID, thingName, thing) {
+  constructor(page, typeID, typeName, type) {
     super();
     this.page = page;
-    this.thingID = thingID;
-    this.thingName = thingName;
-    this.thing = thing;
+    this.typeID = typeID;
+    this.typeName = typeName;
+    this.type = type;
   }
 
   async initFuncs() {
     await this.page.exposeFunction('checkLng', string => lngDetector.detect(string, 1));
-    await this.page.exposeFunction('register', (tit, desc, lin, thingID, thing) => airtable.createArtigoRecord(tit, desc, lin, thingID, thing));
+    await this.page.exposeFunction('register', (tit, desc, lin, typeID, type) => airtable.createArtigoRecord(tit, desc, lin, typeID, type));
   }
 
   async search() {
-    await this.page.goto( `https://medium.com/search?q=${this.thingName}`, {timeout: 400000});
+    await this.page.goto( `https://medium.com/search?q=${this.typeName}`, {timeout: 400000});
     await this.initFuncs();
     await this.scrollAndScrap();
   }
   
   async scrollAndScrap() {
-    await this.page.evaluate( async ( article, thingID, thing ) => {
+    await this.page.evaluate( async ( article, typeID, type ) => {
       await new Promise((resolve, reject) => {
         const items = [];
         const distance = 2500; 
 
         let index = 0;
-        let exist = 0
+        let exist = 0;
+        let gotCheckBeforeSave = false;
         
         //Declare DOM exposed funcs here:
 
@@ -48,13 +49,16 @@ class Medium extends Reference {
           })
 
           const boolean = await res.json()
+          gotCheckBeforeSave = true;
           return boolean.value;
         }
         
         //Use a boolean expression to filter data
 
         scheduleItem = async ( item, boolean) => {
-          if (boolean) {
+          if (boolean && gotCheckBeforeSave) {
+            gotCheckBeforeSave = false;
+            
             await fetch('http://localhost:3000/create', {
                 method: 'POST',
                 headers: {
@@ -65,10 +69,8 @@ class Medium extends Reference {
             });
                  
             const subtitle = item.subtitle.textContent.slice(-1) == '>' ? item.title.textContent : item.subtitle.textContent;
-            await window.register(item.title.textContent, subtitle, item.url, thingID, thing);
-            console.log('salvei')
+            await window.register(item.title.textContent, subtitle, item.url, typeID, type);
           }
-        
         }
 
         const timer = setInterval( async () => {
@@ -103,7 +105,7 @@ class Medium extends Reference {
             console.log(error) 
 
             if (exist < 20) {
-              //Now if not able to get enougth articles that pass in filter params, just get anything to fill the table
+              //Now if not able to get enougth articles that pass in filter params, just get anytype to fill the table
               let cont = exist;
 
               for (let i = 0; i < items.length; i++ ) {
@@ -130,7 +132,7 @@ class Medium extends Reference {
           }
         }, 500);
       });
-    }, ARTICLE_ITEM_CLASS, this.thingID, this.thing);
+    }, ARTICLE_ITEM_CLASS, this.typeID, this.type);
   }
 }
 

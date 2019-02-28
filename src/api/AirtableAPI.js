@@ -6,30 +6,16 @@ class AirtableAPI {
     this.base = new Airtable({apiKey: this.API_KEY}).base('appzOuGudjNGlZ8Jm');
   }
 
-  createArtigoRecord( tit, desc, lin, thing, thingName) {
-    if (thingName === "framework") {
-      this.base('Artigos').create({
-        "TITULO": tit,
-        "DESCRIÇÃO": desc,
-        "URL": lin,
-        "framework": [thing],
-      }, (err, record) => {
-          if (err) { console.error(err); return; }
-          console.log(record.getId());
-      });
-    }
-
-    if (thingName === "lib") {
-      this.base('Artigos').create({
-        "TITULO": tit,
-        "DESCRIÇÃO": desc,
-        "URL": lin,
-        "lib": [thing],
-      }, (err, record) => {
-          if (err) { console.error(err); return; }
-          console.log(record.getId());
-      });
-    }
+  createArtigoRecord( tit, desc, lin, type, typeName) {
+    this.base('Artigos').create({
+      "TITULO": tit,
+      "DESCRIÇÃO": desc,
+      "URL": lin,
+      [typeName]: [type],
+    }, (err, record) => {
+      if (err) { console.error(err); return; }
+      console.log(record.getId());
+    });
   }
 
   async getFrameworkRecords() {

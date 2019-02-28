@@ -7,15 +7,15 @@ dotenv.config();
 const airtable = new(require('./src/api/AirtableAPI'))(process.env.AIRTABLE_KEY);
 
 class App {
-	async execute(thing) {
-		const browser = await puppeteer.launch({headless: false});
+	async execute(type) {
+		const browser = await puppeteer.launch({headless: true});
 
-		if (thing === "framework") {
+		if (type === "framework") {
 			const frameworks = await airtable.getFrameworkRecords();
 
 			console.log("\nrogerio está pesquisando por frameworks...\n")
 
-			for (let i = 10; i < frameworks.length; i++){
+			for (let i = 0; i < frameworks.length; i++){
 				let page = await browser.newPage();
 				await page.setBypassCSP(true);
 				console.log("\n---------------------------------------\npesquisando por " + frameworks[i].name + " no Medium\n---------------------------------------\n");
@@ -26,12 +26,12 @@ class App {
 
 		}
 
-		if (thing === "lib") {
+		if (type === "lib") {
 			const libs = await airtable.getLibsRecords()
 
 			console.log("\nrogerio está pesquisando por libraries...\n")
 
-			for (let i = 10; i < libs.length; i++){
+			for (let i = 0; i < libs.length; i++){
 				let page = await browser.newPage();
 				await page.setBypassCSP(true);
 				console.log("\n---------------------------------------\npesquisando por " + libs[i].name + " no Medium\n---------------------------------------\n");
