@@ -19,9 +19,9 @@ class App {
 				let page = await browser.newPage();
 				await page.setBypassCSP(true);
 				console.log("\n---------------------------------------\npesquisando por " + frameworks[i].name + " no Medium\n---------------------------------------\n");
-				this.medium = new Medium( page, frameworks[i].id, frameworks[i].name, "framework" );
+				this.medium = new Medium( page, frameworks[i].id, frameworks[i].name , "framework" );
 				await this.medium.search();
-				page.close();
+				await page.close();
 			}
 
 		}
@@ -37,7 +37,7 @@ class App {
 				console.log("\n---------------------------------------\npesquisando por " + libs[i].name + " no Medium\n---------------------------------------\n");
 				this.medium = new Medium( page, libs[i].id, libs[i].name, "lib" );
 				await this.medium.search();
-				page.close();
+				await page.close();
 			}
 
 		}

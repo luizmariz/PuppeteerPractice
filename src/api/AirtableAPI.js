@@ -22,11 +22,11 @@ class AirtableAPI {
     return await new Promise( (resolve, reject) => {
       const recordsList = [];
 
-      this.base('Frameworks').select({ 
-        view: "Lista" 
-        
-      }).eachPage(function page(records, fetchNextPage) { 
-        
+      this.base('Frameworks').select({
+        view: "Lista"
+
+      }).eachPage(function page(records, fetchNextPage) {
+
         records.forEach(function(record) {
           recordsList.push({
             "name": record.get('NOME'),
@@ -35,7 +35,7 @@ class AirtableAPI {
         });
 
         fetchNextPage();
-  
+
       }, function done(err) {
         if (err) { console.error(err);}
         resolve(recordsList);
@@ -47,11 +47,11 @@ class AirtableAPI {
     return await new Promise( (resolve, reject) => {
       const recordsList = [];
 
-      this.base('Libs').select({ 
-        view: "Lista" 
-        
-      }).eachPage(function page(records, fetchNextPage) { 
-        
+      this.base('Libs').select({
+        view: "Lista"
+
+      }).eachPage(function page(records, fetchNextPage) {
+
         records.forEach(function(record) {
           recordsList.push({
             "name": record.get('NOME'),
@@ -60,14 +60,14 @@ class AirtableAPI {
         });
 
         fetchNextPage();
-  
+
       }, function done(err) {
         if (err) { console.error(err);}
         resolve(recordsList);
       });
     });
   }
-    
+
 }
 
 module.exports = AirtableAPI;
